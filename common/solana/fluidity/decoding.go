@@ -3,8 +3,10 @@ package fluidity
 import (
 	"fmt"
 
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/fluidity-money/fluidity-app/common/solana"
+
+	"github.com/btcsuite/btcd/btcutil/base58"
+
 	"github.com/near/borsh-go"
 )
 

@@ -12,7 +12,7 @@ import (
 	"github.com/fluidity-money/fluidity-app/lib/log"
 	types "github.com/fluidity-money/fluidity-app/lib/types/solana"
 
-	"github.com/btcsuite/btcutil/base58"
+	"github.com/btcsuite/btcd/btcutil/base58"
 	"github.com/gagliardetto/solana-go"
 	solanaRpc "github.com/gagliardetto/solana-go/rpc"
 	"github.com/near/borsh-go"

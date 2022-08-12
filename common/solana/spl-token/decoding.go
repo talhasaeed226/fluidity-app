@@ -3,10 +3,11 @@ package spl_token
 import (
 	"fmt"
 
-	"github.com/btcsuite/btcutil/base58"
 	"github.com/fluidity-money/fluidity-app/common/solana"
 
 	"github.com/near/borsh-go"
+
+	"github.com/btcsuite/btcd/btcutil/base58"
 )
 
 var UnknownInstructionError = solana.UnknownInstructionError

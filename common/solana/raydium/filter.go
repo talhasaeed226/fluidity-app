@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/btcsuite/btcutil/base58"
+	"github.com/btcsuite/btcd/btcutil/base58"
 
 	solLib "github.com/fluidity-money/fluidity-app/common/solana"
 	"github.com/fluidity-money/fluidity-app/common/solana/fluidity"
