@@ -24,13 +24,13 @@ type (
 	BufferedApplicationTransactions = worker.SolanaBufferedApplicationTransactions
 )
 
-func Slots(f func(Slot)) {
+func Slots(f func(string, Slot)) {
 	queue.GetMessages(TopicSlots, func(message queue.Message) {
 		var log Slot
 
 		message.Decode(&log)
 
-		f(log)
+		f(message.Snowflake, log)
 	})
 }
 

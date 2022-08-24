@@ -3,10 +3,9 @@ package queue
 // queue implements code that talks to RabbitMQ over AMQP.
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
+	"reflect"
 
 	"github.com/fluidity-money/fluidity-app/lib/log"
 	"github.com/fluidity-money/fluidity-app/lib/state"
@@ -35,26 +34,32 @@ const (
 	EnvMessageRetries = `FLU_AMQP_QUEUE_MESSAGE_RETRIES`
 )
 
-type Message struct {
-	Topic   string    `json:"topic"`
-	Content io.Reader `json:"content"`
-}
-
-func (message Message) Decode(decoded interface{}) {
-	// We decode everything that we receive as JSON.
-
-	content := message.Content
-
-	err := json.NewDecoder(content).Decode(decoded)
-
-	if err != nil {
-		log.Fatal(func(k *log.Log) {
-			k.Message = "Failed to decode a JSON message!"
-			k.Payload = err
-		})
+type (
+	// Message given to queue end users
+	Message struct {
+		Topic     string
+		Snowflake string
+		message   interface{}
 	}
 
-	log.Debugf("Successfully decoded a message from JSON!")
+	// encodedMessage seen on the wire and received by a client
+	encodedMessage struct {
+		Snowflake string      `json:"snowflake"`
+		Content   interface{} `json:"content"`
+	}
+)
+
+// Decode a message to the argument given by setting it with reflect.Set
+func (message Message) Decode(decoded interface{}) {
+	v := reflect.ValueOf(decoded)
+
+	if !v.CanSet() {
+		panic("Message decoded value can't be set!")
+	}
+
+	m := reflect.ValueOf(message.message)
+
+	v.Set(m)
 }
 
 // GetMessages from the AMQP server, calling the function each time a
@@ -118,7 +123,17 @@ func GetMessages(topic string, f func(message Message)) {
 			k.Payload = string(body)
 		})
 
-		bodyBuf := bytes.NewBuffer(body)
+		var message encodedMessage
+
+		err := json.Unmarshal(body, &message)
+
+		if err != nil {
+			log.Fatal(func(k *log.Log) {
+				k.Context = Context
+				k.Message = "Failed to decode a message off the wire!"
+				k.Payload = err
+			})
+		}
 
 		// Risk of a collision is near 0 enough to be ignored.
 
@@ -147,14 +162,19 @@ func GetMessages(topic string, f func(message Message)) {
 		}
 
 		f(Message{
-			Topic:   routingKey,
-			Content: bodyBuf,
+			Topic:     routingKey,
+			Snowflake: message.Snowflake,
+			message:   message.Content,
 		})
 
-		log.Debugf(
-			"Asking the server to ack the receipt of %v!",
-			deliveryTag,
-		)
+		log.Debug(func(k *log.Log) {
+			k.Context = Context
+
+			k.Format(
+				"Asking the server to ack the receipt of %v!",
+				deliveryTag,
+			)
+		})
 
 		if err := queueAckDeliveryTag(channel, deliveryTag); err != nil {
 			log.Fatal(func(k *log.Log) {
@@ -169,10 +189,14 @@ func GetMessages(topic string, f func(message Message)) {
 			})
 		}
 
-		log.Debugf(
-			"Server acked the reply for %v!",
-			deliveryTag,
-		)
+		log.Debug(func(k *log.Log) {
+			k.Context = Context
+
+			k.Format(
+				"Server acked the reply for %v!",
+				deliveryTag,
+			)
+		})
 
 		// clean up the retry key
 
@@ -198,7 +222,10 @@ func SendMessage(topic string, content interface{}) {
 
 // SendMessageBytes down a topic, with bytes as content
 func SendMessageBytes(topic string, content []byte) {
-	log.Debugf("Starting to send a publish request to the sending goroutine.")
+	log.Debug(func(k *log.Log) {
+		k.Context = Context
+		k.Message = "Starting to send a publish request to the sending goroutine."
+	})
 
 	amqpDetails := <-chanAmqpDetails
 
@@ -224,7 +251,10 @@ func SendMessageBytes(topic string, content []byte) {
 		})
 	}
 
-	log.Debugf("Sending goroutine has received the request!")
+	log.Debug(func(k *log.Log) {
+		k.Context = Context
+		k.Message = "Sending goroutine has received the request!"
+	})
 }
 
 // Finish up, by clearing the buffer
