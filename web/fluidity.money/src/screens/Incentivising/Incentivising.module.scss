@@ -5,10 +5,33 @@
   align-items: center;
   text-align: center;
   height: 100vh;
-  min-height: 750px;
   width: 100%;
 
   div {
     position: absolute;
   }
+}
+
+.blur {
+  width: 100%;
+  height: 100%;
+  
+  &:before {
+    display: inline-block;
+    height: 100%;
+    width: 100%;
+    content: '';
+    background: #000;
+    opacity: 0.6;
+    filter: blur(144px);
+  }
+}
+
+.backgroundText {
+  position: relative;
+  font-weight: 1000;
+}
+
+.video {
+  max-height: 800px;
 }

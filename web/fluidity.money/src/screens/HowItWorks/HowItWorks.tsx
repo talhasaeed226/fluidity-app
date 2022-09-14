@@ -4,8 +4,14 @@
 
 import Video from "components/Video";
 import { useEffect, useState } from "react";
-import { ContinuousCarousel, LinkButton } from "@fluidity-money/surfing";
+import {
+  ContinuousCarousel,
+  Heading,
+  LinkButton,
+  Text,
+} from "@fluidity-money/surfing";
 import styles from "./HowItWorks.module.scss";
+import useViewport from "hooks/useViewport";
 
 const HowItWorks = () => {
   /* 
@@ -16,79 +22,94 @@ const HowItWorks = () => {
   scrolls thought automatically and constantly
    */
   const images = [
-    "/assets/videos/Fluidity_Wrap.mp4",
-    "/assets/videos/Fluidity_Yield.mp4",
-    "/assets/videos/Fluidity_HowItWorks.mp4",
-  ];
-  const [currentImage, setCurrentImage] = useState(
-    "/assets/videos/Fluidity_Wrap.mp4"
-  );
+    {
+      bgImage: "/assets/videos/FluidityWrap.mp4",
+      text: "FLUIDIFY",
+    },
+    {
+      bgImage: "/assets/videos/FluidityYield.mp4",
+      text: "YIELD",
+    },
+    {
+      bgImage: "/assets/videos/FluidityHowItWorks.mp4",
+      text: "GOVERN",
+    },
+  ].map(({ bgImage, ...image }) => ({
+    ...image,
+    bgImage: window.location.origin + bgImage,
+  }));
+
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const { width } = useViewport();
 
   useEffect(() => {
-    let counter = 0;
     const intervalId = setInterval(() => {
-      setCurrentImage(images[counter]);
-      counter++;
-      if (counter === 3) counter = 0;
-    }, 4000);
+      setCurrentImageIndex(
+        (currentImageIndex) => (currentImageIndex + 1) % images.length
+      );
+    }, 7000);
 
     return () => clearInterval(intervalId);
   }, []);
 
+  const backgroundText = images[currentImageIndex].text;
+
+  const size = width > 1000 ? "h2" : width < 1000 && width > 520 ? "h4" : "h5";
+
+  const callout = (
+    <div className={styles.callout}>
+      <Heading hollow={true} as="h4" className={styles.text}>
+        HOW IT WORKS HOW IT WORKS HOW IT WORKS
+      </Heading>
+      <Heading as="h4" className={styles.text}>
+        HOW IT WORKS
+      </Heading>
+    </div>
+  );
+
   return (
     <div className={`${styles.container} bg-dark`}>
-      <ContinuousCarousel direction={"right"}>
-        <div className={styles.text}>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-          <div>HOW IT WORKS</div>
-        </div>
-      </ContinuousCarousel>
+      <div className={styles.carousel}>
+        <ContinuousCarousel direction={"right"}>
+          <div>
+            {callout}
+            {callout}
+            {callout}
+            {callout}
+            {callout}
+            {callout}
+            {callout}
+            {callout}
+            {callout}
+            {callout}
+            {callout}
+          </div>
+        </ContinuousCarousel>
+      </div>
+
       <div className={styles.grid}>
         <div className={styles.left}>
-          <p
-            className={
-              currentImage === "/assets/videos/Fluidity_Wrap.mp4"
-                ? styles.bold
-                : styles.normal
-            }
+          <Text
+            as={"p"}
+            className={currentImageIndex === 0 ? styles.bold : styles.normal}
           >
             Fluid assets are a 1:1 wrapped asset with perpetual payout
             properties.
-          </p>
-          <p
-            className={
-              currentImage === "/assets/videos/Fluidity_Yield.mp4"
-                ? styles.bold
-                : styles.normal
-            }
+          </Text>
+          <Text
+            as={"p"}
+            className={currentImageIndex === 1 ? styles.bold : styles.normal}
           >
             They distribute yield when when used on any on-chain use-case. Yiled
             is gained through utility.
-          </p>
-          <p
-            className={
-              currentImage === "/assets/videos/Fluidity_HowItWorks.mp4"
-                ? styles.bold
-                : styles.normal
-            }
+          </Text>
+          <Text
+            as={"p"}
+            className={currentImageIndex === 2 ? styles.bold : styles.normal}
           >
             The user is incentivised through governance.
-          </p>
+          </Text>
           <a href="/howitworks">
             <LinkButton
               type={"internal"}
@@ -100,13 +121,50 @@ const HowItWorks = () => {
           </a>
         </div>
         <div className={styles.right}>
-          <div>
-            <Video
-              src={window.location.origin + currentImage}
-              type={"fit"}
-              view={"normal"}
-              loop={true}
-            />
+          {
+            // Text == FLUIDITY
+            currentImageIndex === 0 ? (
+              <img
+                className={styles.behind}
+                style={{ opacity: 1, position: "absolute", zIndex: 5 }}
+                src={window.location.origin + "/assets/text/FLUIDIFY.svg"}
+                alt={images[currentImageIndex].text}
+              />
+            ) : (
+              <div className={styles.backgroundText}>
+                {/* Missing font WHYTE INK SUPER */}
+                <Heading as={size}>
+                  <strong>{backgroundText}</strong>
+                </Heading>
+              </div>
+            )
+          }
+
+          <div className={styles.video}>
+            {currentImageIndex === 0 ? (
+              <Video
+                src={images[currentImageIndex].bgImage}
+                type={"fit"}
+                loop={true}
+                key={"abc"}
+                scale={0.8}
+              />
+            ) : currentImageIndex === 1 ? (
+              <Video
+                src={images[currentImageIndex].bgImage}
+                type={"fit"}
+                loop={true}
+                key={"xyz"}
+              />
+            ) : (
+              <Video
+                src={images[currentImageIndex].bgImage}
+                type={"fit"}
+                loop={true}
+                key={"jfk"}
+                scale={0.8}
+              />
+            )}
           </div>
         </div>
       </div>

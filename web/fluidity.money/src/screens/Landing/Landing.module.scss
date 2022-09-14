@@ -7,7 +7,9 @@
   align-items: center;
   min-height: 850px;
   width: 100%;
-  opacity: 0.7;
+  background-image: url("../../../public/assets/images/bg-blur-desktop.png");
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
   // display: grid;
   // grid-template-columns: repeat(1, 1fr);
   // position: relative;
@@ -16,6 +18,12 @@
   h1 {
     text-align: center;
   }
+}
+
+.bgVid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .video {
@@ -65,6 +73,9 @@
 
 .text {
   margin-right: 10px;
+  &Hollow {
+    margin-right: 10px;
+  }
 }
 
 .carousel {
@@ -73,7 +84,7 @@
 
 .content {
   width: 100%;
-  margin-top: -975px;
+  margin-top: -680px;
   display: flex;
   position: relative;
   flex-direction: column;
@@ -101,6 +112,16 @@
   }
   // display: grid;
   // grid-template-columns: 1fr 1fr 1fr;
+  
+  &.notLoaded {
+    & > .left {
+      width: 50%;
+    }
+    
+    & > .right {
+      width: 50%;
+    }
+  }
 }
 
 .right {
@@ -122,4 +143,13 @@
     align-items: flex-start;
     padding-left: 20px;
   }
+}
+
+.carousel {
+  width: 100%;
+  align-self: flex-end;
+}
+
+.callout {
+  display: flex;
 }

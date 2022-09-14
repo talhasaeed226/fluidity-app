@@ -2,7 +2,12 @@
 // code is governed by a commercial license that can be found in the
 // LICENSE_TRF.md file.
 
-import { GeneralButton } from "@fluidity-money/surfing";
+import {
+  GeneralButton,
+  Heading,
+  LinkButton,
+  Text,
+} from "@fluidity-money/surfing";
 import styles from "./ArticleDisplayCard.module.scss";
 
 export interface ArticleDisplayCardType {
@@ -11,26 +16,47 @@ export interface ArticleDisplayCardType {
   title: string;
   desc: string;
   info: string;
+  isResourcesPage?: boolean;
 }
 
 const ArticleDisplayCard = (article: ArticleDisplayCardType) => {
   return (
     <div className={styles.cardContainer}>
       <img src={article.img} />
-      <h2>{article.title}</h2>
-      <p>{article.desc}</p>
-      <p>{article.info}</p>
+      <Heading as="h4" className={styles.leftMargin10px}>
+        {article.title}
+      </Heading>
+      <Text size="md" as="p">
+        {article.desc}
+      </Text>
+      <Text size="md" as="p">
+        {article.info}
+      </Text>
       <section>
-        <a href="https://blog.fluidity.money/">
-          <GeneralButton
-            version={"secondary"}
-            type={"text"}
-            size={"medium"}
-            handleClick={function (): void {}}
-          >
-            ALL ARTICLES
-          </GeneralButton>
-        </a>
+        {article.isResourcesPage ? (
+          <a href="https://blog.fluidity.money/">
+            <GeneralButton
+              version={"secondary"}
+              buttonType={"text"}
+              size={"large"}
+              handleClick={function (): void {}}
+            >
+              ALL ARTICLES
+            </GeneralButton>
+
+          </a>
+
+        ) : (
+          <a href="/resources">
+            <LinkButton
+              type={"internal"}
+              size={"large"}
+              handleClick={function (): void {}}
+            >
+              EXPLORE ALL RESOURCES
+            </LinkButton>
+          </a>
+        )}
       </section>
     </div>
   );

@@ -30,12 +30,12 @@ const Yield = () => {
   const breakpoint = 860;
 
   const left =
-    width < breakpoint ? (
+    width <= breakpoint ? (
       <Video
-        src={window.location.origin + "/assets/videos/Fluidity_Yield.mp4"}
+        src={window.location.origin + "/assets/videos/FluidityYield.mp4"}
         type={"fit"}
-        view={"scale-up"}
         loop={true}
+        scale={1.4}
       />
     ) : (
       <HowItWorksTemplate header={header} info={info}>
@@ -46,10 +46,10 @@ const Yield = () => {
   const right =
     width > breakpoint ? (
       <Video
-        src={window.location.origin + "/assets/videos/Fluidity_Yield.mp4"}
+        src={window.location.origin + "/assets/videos/FluidityYield.mp4"}
         type={"fit"}
-        view={"normal"}
         loop={true}
+        scale={1.8}
       />
     ) : (
       <HowItWorksTemplate header={header} info={info}>
